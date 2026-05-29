@@ -5,12 +5,13 @@
 * **🛠️ Desacoplamiento:** Aislar la lógica de cómputo de la Evaluación Parcial 1 en un componente independiente y reutilizable.
 * **📐 Estandarización:** Proveer una estructura de servidores virtuales (EC2) sólida, parametrizada y documentada siguiendo las buenas prácticas de Terraform.
 * **🏷️ Versionamiento:** Implementar un flujo de trabajo basado en versionado semántico (`MAJOR.MINOR.PATCH`).
+* **🛡️ DevSecOps & Gobernanza:** Integrar políticas de cumplimiento y análisis estático automatizado para garantizar que el aprovisionamiento de cómputo se mantenga bajo los límites presupuestarios definidos.
 
 ### 2. 🔌 Propósito General del Código
 Este módulo está diseñado para automatizar y gestionar la infraestructura de servidores en Amazon Web Services (AWS). Se encarga de la creación y configuración de los siguientes recursos:
 * **💻 Instancia EC2 (Amazon Elastic Compute Cloud):** Servidor virtual parametrizado (AMI, tipo de instancia) acoplado a una subred específica.
 * **🏷️ Tags de Control:** Asignación dinámica de etiquetas para identificar el entorno, proyecto y herramienta de administración.
-
+* **🤖 Pipeline de Integración Continua (CI):** Automatización en GitHub Actions que valida el formato (`fmt`), consistencia (`validate`), buenas prácticas (`TFLint`), seguridad de vulnerabilidades (`Checkov`) y cumplimiento estricto de políticas de costos (auditoría de tamaño de instancia vía **Open Policy Agent - OPA**).
 ---
 
 ### 3. 🚀 Instrucciones Básicas de Uso

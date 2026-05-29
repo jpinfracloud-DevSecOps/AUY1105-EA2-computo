@@ -4,16 +4,17 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ## [0.1.0] - 2026-05-28
 
-### Added
-- **Aislamiento de Infraestructura de Red:** Migración y desacoplamiento de la VPC de la Evaluación Parcial 1 hacia un módulo autónomo reutilizable.
-- **Componentes de Conectividad:** Creación de recursos base en `main.tf` incluyendo `aws_vpc`, `aws_internet_gateway`, `aws_subnet` (pública) y tablas de ruteo con asociación automática de IPs públicas.
-- **Parametrización:** Inyección de rangos CIDR y zonas de disponibilidad a través de `variables.tf` para flexibilizar el direccionamiento de red.
-- **Laboratorio de Despliegue Local:** Construcción de la carpeta `examples/basic-vpc/` para permitir la simulación y validación del ciclo completo de Terraform (`init`, `validate`, `plan`, `apply`).
-
-### Changed
-- **Evolución del README:** Diseño del manual de uso con una estructura por etapas numeradas detallando la inyección de credenciales de AWS Academy de forma limpia.
+### Añadido
+- **Aislamiento de Infraestructura de Cómputo:** Migración y desacoplamiento del servidor virtual EC2 de la Evaluación Parcial 1 hacia un módulo autónomo parametrizado y reutilizable.
+- **Componentes de Instancia:** Configuración base en `main.tf` para el aprovisionamiento de la instancia EC2, mapeo de llaves SSH y acoplamiento dinámico a subredes externas.
+- **Parametrización:** Inyección de tipos de instancia, identificadores de AMI y tags dinámicos a través de `variables.tf`.
+- **Laboratorio de Despliegue Local:** Construcción de la carpeta de ejemplos para simular y validar el ciclo completo de Terraform (`init`, `plan`, `apply`) de forma aislada.
 
 ### Security
-- Implementación de `.gitignore` para bloquear fugas de tokens de sesión temporales de AWS en el historial público.
-- Congelamiento de versiones de proveedores de Hashicorp mediante firmas hash en el archivo de bloqueo de Terraform.
+- Implementación de `.gitignore` para bloquear fugas de llaves privadas (`.pem`) o tokens de sesión temporales de AWS Academy.
 
+## [0.2.0] - 2026-05-28
+
+### Añadido
+- 🛡️ **Gobernanza de Presupuesto (OPA):** Creación de la regla `policies/terraform_ec2_check.rego` para restringir el despliegue de hardware solo a instancias económicas autorizadas (`t2.micro`).
+- 🚀 **Pipeline de Integración Continua:** Configuración automatizada en `.github/workflows/ci.yml` para ejecutar auditorías secuenciales de formato, sintaxis (`TFLint`), vulnerabilidades (`Checkov`) y cumplimiento de políticas de costos.

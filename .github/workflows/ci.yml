@@ -1,0 +1,80 @@
+name: CI - Modulo Computo (ec2_module)
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validacion:
+    name: Calidad y seguridad
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN:     ${{ secrets.AWS_SESSION_TOKEN }}
+      AWS_DEFAULT_REGION:    ${{ secrets.AWS_REGION }}
+
+    steps:
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configurar Open Policy Agent (OPA)
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: Configurar TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Formato del codigo (terraform fmt)
+        run: terraform fmt -check -recursive
+
+      - name: Inicializar Terraform
+        run: terraform init -backend=false -input=false
+
+      - name: Validar configuracion (terraform validate)
+        run: terraform validate
+
+      - name: Analisis estatico (TFLint)
+        run: tflint -f compact
+
+      - name: Analisis de seguridad (Checkov)
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          quiet: true
+          soft_fail: true
+
+      - name: Validacion de politicas OPA (EC2)
+        run: |
+          # Proveedor temporal aislado para permitir la compilacion del plan en la CI
+          echo 'provider "aws" { region = "us-east-1" }' > _ci_provider.tf
+          
+          terraform init -backend=false -input=false
+          terraform plan -out=tfplan -input=false
+          terraform show -json tfplan > plan.json
+
+          VIOLATIONS=$(opa eval -f raw \
+            -d policies/terraform_ec2_check.rego \
+            -i plan.json \
+            'count(data.terraform.ec2.violation)')
+
+          if [ "$VIOLATIONS" != "0" ]; then
+            echo "❌ POLITICA EC2 - VIOLACIONES ENCONTRADAS:"
+            opa eval -f pretty \
+              -d policies/terraform_ec2_check.rego \
+              -i plan.json 'data.terraform.ec2.violation'
+            exit 1
+          fi
+          echo "✅ POLITICA EC2 OK - solo t2.micro permitido"
+          
