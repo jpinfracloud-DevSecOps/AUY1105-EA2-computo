@@ -1,0 +1,17 @@
+# Carpetas e información local de Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Archivos de variables crash/secretos que tú crees localmente
+*.tfvars
+*.tfvars.json
+
+# Archivos de configuración de variables de entorno locales
+.env
+.envrc
+
+# Archivos temporales o de respaldo del sistema operativo
+.DS_Store
+Thumbs.db
+crash.log
