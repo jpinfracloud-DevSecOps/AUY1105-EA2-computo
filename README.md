@@ -75,3 +75,13 @@ Despliega los recursos en la nube de AWS (requiere confirmación escribiendo yes
     ```hcl
     terraform apply
     ```
+
+## 🎯 Filosofía de Diseño y Principios de Arquitectura (Módulo de Cómputo)
+
+Este módulo se ha estructurado bajo una filosofía de ingeniería orientada a la sostenibilidad y el desacoplamiento, basada en tres pilares fundamentales:
+
+1. **Persistencia (Aislamiento y Consistencia):** Rechazamos el desarrollo acelerado. La estabilidad en el cómputo requiere un diseño pausado que permita la validación sintáctica segura mediante entornos de prueba aislados (directorio `examples/`). Al congelar las versiones del proveedor de AWS, garantizamos que el comportamiento del servidor sea consistente y predecible en el tiempo.
+   
+2. **Escalabilidad (Plasticidad del Hardware):** Las necesidades de cómputo mutan constantemente. Este módulo abstrae el tamaño de la instancia (`instance_type`) y las imágenes de sistema (`ami_id`) en variables dinámicas. Esto permite que la infraestructura se adapte y escale según la demanda del entorno sin necesidad de reescribir el núcleo del código.
+   
+3. **Reutilización (Arquitectura de Caja Negra):** Este componente funciona de manera agnóstica al entorno. Ha sido diseñado para ser consumido de forma remota por cualquier orquestador, requiriendo únicamente la inyección de una subred (`subnet_id`) para operar, convirtiéndose en un bloque de construcción universal y replicable.    
